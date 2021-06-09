@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress-svc
+  labels:
+    app: wordpress
+  annotations:
+    metallb.universe.tf/allow-shared-ip: metallb
+spec:
+  selector:
+    app: wordpress
+  type: LoadBalancer
+    loadBalancerIP: 192.168.99.154
+  ports:
+    - port: 5050 
+      targetPort: 5050
+      protocol: TCP
+      name: 5050/wordpress
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wp-pv-claim
+  labels:
+    app: wordpress
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500M
+--
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress-deployment
+  labels:
+    app: wordpress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      containers:
+      - image: wordpress_image
+        imagePullPolicy: Never
+        name: wordpress
+        ports:
+        - containerPort: 5050
+          name: 5050/wordpress

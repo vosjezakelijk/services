@@ -1,0 +1,10 @@
+apiVersion: 1
+
+providers:
+- name: 'Default'
+  type: file
+  orgId: 1
+  folder: ''
+  options:
+    path: /var/lib/grafana/dashboards
+  
